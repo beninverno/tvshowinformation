@@ -22,7 +22,7 @@ class showInformation(object):
         Returns:
             N/A
 
-0        Raises:
+        Raises:
             N/A
         """
         self.seasonsepisodedict = {}
@@ -47,10 +47,15 @@ class showInformation(object):
             python-decoded JSON of information
 
         Raises:
-            N/A
+            Exception if HTTP Error occurs.
         """
-        with urllib.request.urlopen(link) as url:
-            data = (json.loads(url.read().decode()))
+        try:
+            with urllib.request.urlopen(link) as url:
+                data = (json.loads(url.read().decode()))
+        except urllib.error.HTTPError:
+            raise Exception("Couldn't find webpage!")
+            
+            
         return data
 
     def getId(self):
@@ -66,10 +71,7 @@ class showInformation(object):
             Exception: If TV Show is not found in API
             Exception: If ID was not found in JSON file
         """
-        try:
-            data = showInformation.getJson(self.infourl)
-        except:
-            raise Exception("Couldn't find TV Show!")
+        data = showInformation.getJson(self.infourl)
         if "id" in data:
             return data["id"]
         else:
@@ -86,7 +88,7 @@ class showInformation(object):
             Cast members in a list
 
         Raises:
-            N/A
+            Exception: If cast is not found in API
         """
         data = showInformation.getJson(self.casturl)
         cast = []
@@ -205,7 +207,10 @@ class showInformation(object):
         Raises:
             N/A
         """
-        return self.seasonsepisodedict[seasonnum]
+        try:
+            return self.seasonsepisodedict[seasonnum]
+        except KeyError:
+            return('N/A (Does not exist)')
 
     def getEpisodeName(self, seasonnum, episodenum):
         """Retrieves the episode name from nested list and returns as a string
@@ -220,7 +225,11 @@ class showInformation(object):
         Raises:
             N/A
         """
-        return self.episodenamelist[seasonnum][episodenum]
+        try:
+            return self.episodenamelist[seasonnum][episodenum]
+        except IndexError:
+            print('Season or Episode is out of range.')
+            return
 
     def getCast(self):
         """Retrieves cast from list and returns it as a single string with actors seperate by commas.
@@ -294,5 +303,10 @@ class showInformation(object):
         Raises:
             N/A
         """
-        episodename = showInformation.getEpisodeName(self, seasonnum, episodenum)
-        return self.runtimeofepisodes[episodename]
+        try:
+            episodename = showInformation.getEpisodeName(self, seasonnum, episodenum)
+            return self.runtimeofepisodes[episodename]
+        except IndexError:
+            return('N/A (Runtime not found)')
+         except KeyError:
+            return('N/A (Runtime not found)')
