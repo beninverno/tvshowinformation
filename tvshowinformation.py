@@ -10,9 +10,14 @@ class showInformation(object):
         Variables:
             self.seasonepisodedict: Dictionary containing the seasons as key with the amount of episodes in that season
             self.show: Show name stored as a lowercase string
+            self.episodenamelist: Nested list of episode names, accessed by first index being season and second index being episode number in season.
+            self.runtimeofepisodes: Dictionary that stores episode name as a key, with the running time of that episode as the value
+            self.cast: Stores cast members as seperate strings inside a list
+            self.genres: Stores genre(s) as seperate strings inside a list
             self.infourl: url of API needed to retrieve the information (more importantly, the ID number)
             self.showid: Retrieves ID of the show through API and a seperate function called 'getid'
             self.episodesurl: The url that gets all the information about the episodes of the show.
+            self.casturl: The url used that retrieves the cast members in a show
 
         Returns:
             N/A
@@ -111,8 +116,11 @@ class showInformation(object):
             return False
 
     def populate(self):
-        """Populates the seasonsepisodedict with information about the seasons and episodes,
-        populates episodenamelist with episode names.
+        """
+        Populates the self.seasonsepisodedict with information about the seasons and episodes.
+        Populates self.episodenamelist with episode names.
+        Populates self.cast with a list of cast members.
+        Populates self.genres with a list of the TV Show's genre(s).
 
         Args:
             N/A
@@ -169,7 +177,7 @@ class showInformation(object):
         return(max(self.seasonsepisodedict))
 
     def getEpisodesTotal(self):
-        """Retrieves amount of total episodes the show has
+        """Retrieves amount of total episodes the show has and returns as an integer
 
         Args:
             N/A
@@ -186,7 +194,7 @@ class showInformation(object):
         return totalepisodes
 
     def getEpisodesInSeason(self, seasonnum):
-        """Retrieves amount of episodes in specified season
+        """Retrieves amount of episodes in specified season and returns as an integer
 
         Args:
             seasonnum: Season Number that you want to retrieve amount of episodes for
@@ -200,7 +208,7 @@ class showInformation(object):
         return self.seasonsepisodedict[seasonnum]
 
     def getEpisodeName(self, seasonnum, episodenum):
-        """Retrieves the episode name from nested list
+        """Retrieves the episode name from nested list and returns as a string
 
         Args:
             seasonnum: Season number that you want to retrieve episode name
@@ -215,8 +223,7 @@ class showInformation(object):
         return self.episodenamelist[seasonnum][episodenum]
 
     def getCast(self):
-        """Returns cast list as a string
-
+        """Retrieves cast from list and returns it as a single string with actors seperate by commas.
         Args:
             N/A
 
@@ -236,7 +243,7 @@ class showInformation(object):
         return caststring
 
     def getGenres(self):
-        """Returns genre(s) list as a string
+        """Retrieves genre(s) from list and returns them as a single string with genre(s) seperate by commas.
 
         Args:
             N/A
@@ -257,7 +264,7 @@ class showInformation(object):
         return genresstring
 
     def getTotalRuntime(self):
-        """Returns total runtime as an integer
+        """Retrieves runtime of each episode and returns the sum of all episode runtimes.
 
         Args:
             N/A
