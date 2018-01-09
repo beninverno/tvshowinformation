@@ -1,0 +1,20 @@
+from tvshowinformation import *
+
+tvshow = showInformation(input('What show would you like to view the information of? '))
+print('The ID Number of this show is: ' + str(tvshow.getId()))
+print('The number of seasons in this show is: ' + str(tvshow.getSeasons()))
+print('The number of episodes in this show are: ' + str(tvshow.getEpisodesTotal()))
+print('The number of episodes in Season 1 are: ' + str(tvshow.getEpisodesInSeason(1)))
+print('The number of episodes in Season 2 are: ' + str(tvshow.getEpisodesInSeason(2)))
+print('The number of episodes in Season 3 are: ' + str(tvshow.getEpisodesInSeason(3)))
+print('The number of episodes in Season 4 are: ' + str(tvshow.getEpisodesInSeason(4)))
+print('The number of episodes in Season 5 are: ' + str(tvshow.getEpisodesInSeason(5)))
+print('The name of the first episode in the show is: ' + str(tvshow.getEpisodeName(1, 1)))
+print('The name of the second episode in the show is: ' + str(tvshow.getEpisodeName(1, 2)))
+print('The main cast of the show is: ' + str(tvshow.getCast()))
+print('The genres of the show are: ' + str(tvshow.getGenres()))
+print('The total runtime of the show is: ' + str(tvshow.getTotalRuntime()))
+print('The runtime of episode one is: ' + str(tvshow.getEpisodeRuntime(1, 1)))
+print('The runtime of episode two is: ' + str(tvshow.getEpisodeRuntime(1, 2)))
+print('The runtime of episode three is: ' + str(tvshow.getEpisodeRuntime(1, 3)))
+
