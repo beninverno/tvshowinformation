@@ -11,9 +11,10 @@ class showInformation(object):
             self.seasonepisodedict: Dictionary containing the seasons as key with the amount of episodes in that season
             self.show: Show name stored as a lowercase string
             self.episodenamelist: Nested list of episode names, accessed by first index being season and second index being episode number in season.
-            self.runtimeofepisodes: Dictionary that stores episode name as a key, with the running time of that episode as the value
+            self.runtimedescriptionofepisodes: Dictionary that stores episode name as a key, with the running time and description of that episode as the value as a list, with running time at index 0 and description at index 1.
             self.cast: Stores cast members as seperate strings inside a list
             self.genres: Stores genre(s) as seperate strings inside a list
+            self.showdescription: String that stores the description of the show
             self.infourl: url of API needed to retrieve the information (more importantly, the ID number)
             self.showid: Retrieves ID of the show through API and a seperate function called 'getid'
             self.episodesurl: The url that gets all the information about the episodes of the show.
@@ -28,11 +29,12 @@ class showInformation(object):
         self.seasonsepisodedict = {}
         self.show = show.lower()
         self.episodenamelist = []
-        self.runtimeofepisodes = {}
+        self.runtimedescriptionofepisodes = {}
         self.cast = []
         self.genres = []
+        self.showdescription = ''
         self.infourl = 'http://api.tvmaze.com/singlesearch/shows?q=' + self.show
-        self.showid = showInformation.getId(self)
+        self.showid = showInformation.getIdShowInfo(self)
         self.episodesurl = 'http://api.tvmaze.com/shows/' + str(self.showid) + '/episodes'
         self.casturl = 'http://api.tvmaze.com/shows/' + str(self.showid) + '/cast'
         showInformation.populate(self)
@@ -57,8 +59,9 @@ class showInformation(object):
             
         return data
 
-    def getId(self):
-        """Retrieves the identification number used to get other information about the show from API
+    def getIdShowInfo(self):
+        """Retrieves the identification number used to get other information about the show from API,
+        also retrieves the summary of the show and appends it to self.showdescription.
 
         Args:
             N/A
@@ -75,9 +78,12 @@ class showInformation(object):
             print('TV Show could not be found')
             sys.exit()
         elif "id" in data:
+            if "summary" in data:
+                self.showdescription = data["summary"]
             return data["id"]
         else:
             raise Exception('Could not retrieve ID!')
+        
 
     def populateCast(self):
         """Populates a list of cast of tv show, and returns it
@@ -111,13 +117,33 @@ class showInformation(object):
         Raises:
             N/A
         """
-
+        
         data = showInformation.getJson(self.infourl)
         if "genres" in data:
             return data["genres"]
         else:
             return False
+        
+    def stringsToRemove(self, stringtoedit):
+        """Removes html tags from description strings
 
+        Args:
+            stringtoedit: string that you want to remove tags from
+
+        Returns:
+            string with tags removed
+
+        Raises:
+            N/A
+        """
+        stringsToRemove = ['<p>', '<b>', '</p>', '</b>']
+        try:
+            for strings in stringsToRemove:
+                stringtoedit = stringtoedit.replace(strings, '')
+            return stringtoedit
+        except AttributeError:
+            return None
+        
     def populate(self):
         """
         Populates the self.seasonsepisodedict with information about the seasons and episodes.
@@ -139,6 +165,7 @@ class showInformation(object):
         episodes = [0]
         namelist = [[0]]
         runtimelist = [[0]]
+        episodedescriptionlist = [[0]]
         data = showInformation.getJson(self.episodesurl)
         for dicts in data:
             for keys in dicts:
@@ -148,19 +175,20 @@ class showInformation(object):
                     episodes.append(0)
                     namelist.append([0])
                     runtimelist.append([0])
+                    episodedescriptionlist.append([0])
                 if keys == "number":
                     episodes[season] += 1
             namelist[season].append(dicts["name"])
             runtimelist[season].append(dicts["runtime"])
+            episodedescriptionlist[season].append(self.stringsToRemove(dicts["summary"]))
             
         for i in range(1, len(seasons)):
             self.seasonsepisodedict[seasons[i]] = episodes[i]
 
         for i in range(len(namelist)):
             for j in range(len(namelist[i])):
-                self.runtimeofepisodes[namelist[i][j]] = runtimelist[i][j]
-
-                           
+                self.runtimedescriptionofepisodes[namelist[i][j]] = [runtimelist[i][j], episodedescriptionlist[i][j]]
+                   
         self.cast = showInformation.populateCast(self)
         self.genres = showInformation.populateGenre(self)
         self.episodenamelist = namelist
@@ -290,8 +318,8 @@ class showInformation(object):
             N/A
         """
         totalRuntime = 0
-        for keys in  self.runtimeofepisodes:
-            totalRuntime +=  self.runtimeofepisodes[keys]
+        for keys in  self.runtimedescriptionofepisodes:
+            totalRuntime +=  self.runtimedescriptionofepisodes[keys][0]
         return totalRuntime
 
     def getEpisodeRuntime(self, seasonnum, episodenum):
@@ -312,8 +340,47 @@ class showInformation(object):
             return('Invalid input, season number and episode number must be integers.')
         try:
             episodename = showInformation.getEpisodeName(self, seasonnum, episodenum)
-            return self.runtimeofepisodes[episodename]
+            return self.runtimedescriptionofepisodes[episodename][0]
         except IndexError:
             return('N/A (Runtime not found)')
         except KeyError:
             return('N/A (Runtime not found)')
+
+    def getShowSummary(self):
+        """Returns summary of the show as a string, stripped of its <b> and <p> elements.
+
+        Args:
+            N/A
+
+        Returns:
+            Summary as a string
+
+        Raises:
+            N/A
+        """ 
+        return self.stringsToRemove(self.showdescription)
+
+    def getEpisodeDescription(self, seasonnum, episodenum):
+        """Retrieves episode description from runtimeofepisodes dictionary, and returns
+        it.
+
+        Args:
+            seasonnum: Season number of episode you want to retrieve
+            episodenum: Episode number in season you want to retrieve
+
+        Returns:
+            Description of episode as a string
+
+        Raises:
+            N/A
+        """
+        if (type(seasonnum) is not int) and (type(episodenum) is not int):
+            return('Invalid input, season number and episode number must be integers.')
+        try:
+            episodename = showInformation.getEpisodeName(self, seasonnum, episodenum)
+            return self.runtimedescriptionofepisodes[episodename][1]
+        except IndexError:
+            return('N/A (Description not found)')
+        except KeyError:
+            return('N/A (Description not found)')
+
