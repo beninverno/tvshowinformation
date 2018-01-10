@@ -1,4 +1,4 @@
-import urllib.request, json
+import urllib.request, json, sys
 
 class showInformation(object):
     def __init__(self, show):
@@ -22,7 +22,7 @@ class showInformation(object):
         Returns:
             N/A
 
-        Raises:
+0        Raises:
             N/A
         """
         self.seasonsepisodedict = {}
@@ -53,8 +53,7 @@ class showInformation(object):
             with urllib.request.urlopen(link) as url:
                 data = (json.loads(url.read().decode()))
         except urllib.error.HTTPError:
-            raise Exception("Couldn't find webpage!")
-            
+            return None
             
         return data
 
@@ -72,11 +71,13 @@ class showInformation(object):
             Exception: If ID was not found in JSON file
         """
         data = showInformation.getJson(self.infourl)
-        if "id" in data:
+        if data == None:
+            print('TV Show could not be found')
+            sys.exit()
+        elif "id" in data:
             return data["id"]
         else:
             raise Exception('Could not retrieve ID!')
-            return False
 
     def populateCast(self):
         """Populates a list of cast of tv show, and returns it
@@ -207,6 +208,8 @@ class showInformation(object):
         Raises:
             N/A
         """
+        if type(seasonnum) is not int:
+            return('Invalid Input, must be integer.')
         try:
             return self.seasonsepisodedict[seasonnum]
         except KeyError:
@@ -225,6 +228,8 @@ class showInformation(object):
         Raises:
             N/A
         """
+        if (type(seasonnum) is not int) and (type(episodenum) is not int):
+            return('Invalid input, season number and episode number must be integers.')
         try:
             return self.episodenamelist[seasonnum][episodenum]
         except IndexError:
@@ -303,10 +308,12 @@ class showInformation(object):
         Raises:
             N/A
         """
+        if (type(seasonnum) is not int) and (type(episodenum) is not int):
+            return('Invalid input, season number and episode number must be integers.')
         try:
             episodename = showInformation.getEpisodeName(self, seasonnum, episodenum)
             return self.runtimeofepisodes[episodename]
         except IndexError:
             return('N/A (Runtime not found)')
-         except KeyError:
+        except KeyError:
             return('N/A (Runtime not found)')
