@@ -4,6 +4,7 @@ tvshow = showInformation(input('What show would you like to view the information
 print('The ID Number of this show is: ' + str(tvshow.getIdShowInfo()))
 print('The main cast of the show is: ' + str(tvshow.getCast()))
 print('The genres of the show are: ' + str(tvshow.getGenres()))
+print('The rating  of the show: '+str(tvshow.getShowRating()))
 print('The total runtime of the show is: ' + str(tvshow.getTotalRuntime()))
 print('The number of episodes in this show are: ' + str(tvshow.getEpisodesTotal()))
 print('The summary of the show is: ' + str(tvshow.getShowSummary()))
