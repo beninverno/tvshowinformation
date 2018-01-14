@@ -37,6 +37,8 @@ class showInformation(object):
         self.showid = showInformation.getIdShowInfo(self)
         self.episodesurl = 'http://api.tvmaze.com/shows/' + str(self.showid) + '/episodes'
         self.casturl = 'http://api.tvmaze.com/shows/' + str(self.showid) + '/cast'
+        self.rating = showInformation.getShowRating(self)
+
         showInformation.populate(self)
 
     def getJson(link):
@@ -83,6 +85,22 @@ class showInformation(object):
             return data["id"]
         else:
             raise Exception('Could not retrieve ID!')
+
+    def getShowRating(self):
+        """Retrives the average rating of the TV show
+
+        Args:
+            N/A
+
+        Returns:
+            Average rating as floating point number
+
+        Raises:
+            N/A
+        """
+        data = showInformation.getJson(self.infourl)
+        rating = float(data["rating"]["average"])
+        return rating
         
 
     def populateCast(self):

@@ -22,6 +22,7 @@ tvshow.getEpisodesTotal()                     ## Returns total amount of episode
 tvshow.getEpisodesInSeason(season)            ## Returns amount of episodes in specified season of TV Show as an integer
 tvshow.getEpisodeName(season, episode)        ## Returns name of episode of corresponding Episode in Season
 tvshow.getCast()                              ## Returns comma-seperated cast as a string
+tvshow.getShowRating()                        ## Returns the average show rating as a floating point number
 tvshow.getGenres()                            ## Returns comma-seperated genre(s) as a string
 tvshow.getTotalRuntime()                      ## Returns total runtime of TV Show as an integer
 tvshow.getEpisodeRuntime(season, episode)     ## Returns runtime of Episode number in specified season
