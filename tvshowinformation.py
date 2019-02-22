@@ -1,4 +1,7 @@
-import urllib.request, json, sys
+import json
+import sys
+from urllib import request, error
+
 
 class showInformation(object):
     def __init__(self, show):
@@ -54,9 +57,9 @@ class showInformation(object):
             Exception if HTTP Error occurs.
         """
         try:
-            with urllib.request.urlopen(link) as url:
+            with request.urlopen(link) as url:
                 data = (json.loads(url.read().decode()))
-        except urllib.error.HTTPError:
+        except error.HTTPError:
             return None
             
         return data
